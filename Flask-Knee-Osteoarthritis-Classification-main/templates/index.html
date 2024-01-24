@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script type="text/javascript" src="https://unpkg.com/vtk.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css?family=Play&display=swap" rel="stylesheet">
+    <title>Digital X-ray Images Classification</title>
+    <meta name="theme-color" content="#00ff00">
+    <style>
+        body {
+            background-color: #237299;
+            color: #333;
+            font-family: 'Play', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .very_main {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: #6dc1d6;
+            color: white;
+            text-align: center;
+            padding: 10px 10px;
+        }
+
+        /* Add other styles as needed */
+
+    </style>
+</head>
+
+<body>
+
+    <div class="very_main">
+
+        <header>
+            <div class="top_frame">
+                <h1>Anomaly detection in x-rays </h1>
+            </div>
+        </header>
+
+        {% extends "base.html" %} {% block content %}
+
+        <p class="description">
+            <h2>Choose your X-Ray file and click Predict to get your diagnosis.</h2>
+        </p>
+
+        <div>
+            <form id="upload-file" method="post" enctype="multipart/form-data">
+                <label for="imageUpload" class="upload-label">
+                    Select your X-Ray Visual
+                </label>
+                <input type="file" name="file" id="imageUpload" accept=".png, .jpg, .jpeg">
+            </form>
+
+            <div class="image-section" style="display:none;">
+                <div class="img-preview">
+                    <div id="imagePreview">
+                    </div>
+                </div>
+                <div>
+                    <button type="button" class="upload-label" id="btn-predict">Predict!</button>
+                </div>
+            </div>
+
+            <div class="loader" style="display:none;"></div>
+
+            <h3 id="result">
+                <span> </span>
+            </h3>
+
+        </div>
+
+        <p class="final_word">
+            <b>Prepared by Subashini Swetha</b>
+        </p>
+
+    </div>
+    <div id="vtk-container" style="height: 400px;"></div>
+
+    <script>
+        document.getElementById("btn-show-3d-model").addEventListener("click", function () {
+            show3DModel();
+        });
+    
+        function show3DModel() {
+            document.getElementById("vtk-container").innerHTML = "";
+    
+            const reader = vtk.IO.StlReader.newInstance();
+            const actor = vtk.Rendering.Core.vtkActor.newInstance();
+            const mapper = vtk.Rendering.Core.vtkMapper.newInstance();
+    
+            reader.setUrl("C:\\Users\\Home\\Downloads\\59d5dfdeaec6b_2CTIMAGES-LEGS-Knee_Rt_nrrd.89a5f1fdc73f7519eb570d44999b61e3_V260AP.stl").then(() => {
+                actor.setMapper(mapper);
+                mapper.setInputData(reader.getOutputData());
+                const renderer = vtk.Rendering.Core.vtkRenderer.newInstance();
+                renderer.addActor(actor);
+    
+                const renderWindow = vtk.Rendering.Core.vtkRenderWindow.newInstance();
+                const renderWindowContainer = document.getElementById("vtk-container");
+                renderWindowContainer.appendChild(renderWindow.getContainer());
+                renderWindow.addRenderer(renderer);
+    
+                const interactor = vtk.Rendering.Core.vtkRenderWindowInteractor.newInstance();
+                interactor.setView(renderWindow);
+                interactor.initialize();
+                interactor.bindEvents(renderWindowContainer);
+    
+                renderWindow.render();
+            });
+        }
+    </script>
+
+    {% endblock %}
+
+</body>
+
+</html>
